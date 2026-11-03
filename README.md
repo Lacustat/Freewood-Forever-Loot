@@ -1,7 +1,7 @@
 # Freewood-Forever-Loot
 
 **Deutsch & English · German & English.** Autor · Author: Lacustat. Version 0.1.3 · Interface 16001 (World of Warcraft: Forever).
-
+![loot](https://github.com/Lacustat/Freewood-OctoWoW-Bilder/blob/main/loot.jpg)
 ## Inhalt · Contents
 - [Deutsch](#deutsch)
 - [English](#english)
