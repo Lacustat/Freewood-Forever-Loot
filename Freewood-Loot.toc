@@ -6,6 +6,7 @@
 ## Version: 0.1.3
 ## Dependencies: Freewood-Core
 ## IconTexture: Interface\Icons\INV_Misc_Bag_10
+## X-Wago-ID: 4N2bz4NL
 
 Locales.lua
 Loot.lua
