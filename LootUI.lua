@@ -359,6 +359,7 @@ UI:RegisterTab("loot", {
 
 if UI.RegisterSettingsSection then
     UI:RegisterSettingsSection("loot", {
+        category = "modules",
         order = 110,
         height = 180,
         build = function(parent)
