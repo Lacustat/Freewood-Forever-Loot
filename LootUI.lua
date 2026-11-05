@@ -20,6 +20,20 @@ local function ColoredName(name, quality, id)
     return "|cff" .. UI.RarityHex(quality) .. text .. "|r"
 end
 
+-- Tooltip eines Items (der Core haengt Verkaufspreis, Quests usw. an); SetItemByID, sonst Link
+local function ShowItemTip(frame, itemID)
+    if not (itemID and GameTooltip) then return end
+    GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
+    local ok = GameTooltip.SetItemByID and pcall(GameTooltip.SetItemByID, GameTooltip, itemID)
+    if not ok then pcall(GameTooltip.SetHyperlink, GameTooltip, "item:" .. itemID) end
+    GameTooltip:Show()
+end
+local function HookItemTip(frame)
+    frame:EnableMouse(true)
+    frame:SetScript("OnEnter", function(self) ShowItemTip(self, self.itemID) end)
+    frame:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+end
+
 local function ListRow(parent)
     local row = UI.CreatePanel(parent, "card", "bronze")
     row:SetHeight(ROW_H)
@@ -37,17 +51,7 @@ local function ListRow(parent)
     row.remove:SetPoint("RIGHT", row, "RIGHT", -6, 0)
     UI.AttachTooltip(row.remove, function() return FW.L.LOOT_REMOVE end, "")
     -- Tooltip des Items beim Darueberfahren
-    row:EnableMouse(true)
-    row:SetScript("OnEnter", function(self)
-        if self.itemID and GameTooltip then
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            pcall(GameTooltip.SetItemByID, GameTooltip, self.itemID)
-            GameTooltip:Show()
-        end
-    end)
-    row:SetScript("OnLeave", function()
-        if GameTooltip then GameTooltip:Hide() end
-    end)
+    HookItemTip(row)
     return row
 end
 
@@ -276,6 +280,7 @@ local function Build(content)
                 row.listed = UI.CreateLabel(row, FW.L.LOOT_RECENT_LISTED, { size = 10, color = "textDim", justify = "RIGHT" })
                 row.listed:SetPoint("RIGHT", row, "RIGHT", -12, 0)
                 row.name:SetPoint("RIGHT", row, "RIGHT", -96, 0)
+                HookItemTip(row)
                 recentRows[i] = row
             end
             row:ClearAllPoints()
@@ -303,14 +308,21 @@ local function Build(content)
         for i, entry in ipairs(log) do
             local line = logRows[i]
             if not line then
-                line = UI.CreateLabel(logScroll.child, "", { size = 11 })
+                line = CreateFrame("Frame", nil, logScroll.child)
+                line:SetHeight(16)
+                line.text = UI.CreateLabel(line, "", { size = 11 })
+                line.text:SetPoint("LEFT", line, "LEFT", 0, 0)
+                line.text:SetPoint("RIGHT", line, "RIGHT", 0, 0)
+                line.text:SetWordWrap(false)
+                line.text:SetJustifyH("LEFT")
+                HookItemTip(line)
                 logRows[i] = line
             end
+            line.itemID = entry.id
             line:ClearAllPoints()
             line:SetPoint("TOPLEFT", logScroll.child, "TOPLEFT", 4, -((i - 1) * 18 + 4))
             line:SetPoint("TOPRIGHT", logScroll.child, "TOPRIGHT", -4, -((i - 1) * 18 + 4))
-            line:SetWordWrap(false)
-            line:SetText(string.format(FW.L.LOOT_LOG_LINE, date("%H:%M", entry.t or 0), entry.name or "?", entry.count or 1))
+            line.text:SetText(string.format(FW.L.LOOT_LOG_LINE, date("%H:%M", entry.t or 0), entry.name or "?", entry.count or 1))
             line:Show()
         end
         for i = #log + 1, #logRows do
