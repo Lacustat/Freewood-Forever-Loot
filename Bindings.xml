@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="FREEWOOD_LOOT_TAB" header="FREEWOOD_LOOT" category="ADDONS">
+        Freewood_ToggleTab("loot")
+    </Binding>
+</Bindings>
